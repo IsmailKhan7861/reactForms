@@ -2,20 +2,31 @@ import { useState, useEffect } from "react";
 
 const SimpleInput = (props) => {
   const [currName, setName] = useState("");
+  const [currEmail, setEmail] = useState("");
   const [nameEdit, setNameEdit] = useState(false);
+  const [emailEdit, setEmailEdit] = useState(false);
 
   const nameValid = currName.trim() !== "";
-  let isNameValid = !nameValid && nameEdit;
-  let isFormValid = false;
+  const emailValid = currEmail.trim().includes("@");
 
-  if (nameValid) {
+  let isNameValid = !nameValid && nameEdit;
+  let isEmailValid = !emailValid && emailEdit;
+
+  let isFormValid = false;
+  //OVERALL FORM
+  if (nameValid && emailValid) {
     isFormValid = true;
   }
+
+  //NAME
   const nameInputHandler = (event) => {
     setName(event.target.value);
     setNameEdit(true);
   };
-
+  const emailInputHandler = (event) => {
+    setEmail(event.target.value);
+    setNameEdit(true);
+  };
   const onBlurHandler = (event) => {
     setNameEdit(true);
     if (!nameValid) {
@@ -23,20 +34,32 @@ const SimpleInput = (props) => {
     }
   };
 
+  const onBlurEmailHandler = (event) => {
+    setEmailEdit(true);
+  };
+  let content = <p className="error-text">Name is Not Valid</p>;
+  let emailContent = <p className="error-text">Email is Not Valid</p>;
+  let nameInputClasses = isNameValid ? "form-control invalid" : "form-control";
+  let emailInputClasses = isEmailValid
+    ? "form-control invalid"
+    : "form-control";
+
   const submitHandler = (event) => {
     event.preventDefault();
     setNameEdit(true);
-    if (!nameValid) {
+    setEmailEdit(true);
+    if (!nameValid || !emailValid) {
       return;
     }
 
     setName("");
+    setEmail("");
     setNameEdit(false);
+    setEmailEdit(false);
   };
 
-  let content = <p className="error-text">Name is Not Valid</p>;
+  //EMAIL
 
-  let nameInputClasses = isNameValid ? "form-control invalid" : "form-control";
   return (
     <form onSubmit={submitHandler}>
       <div className={nameInputClasses}>
@@ -50,6 +73,18 @@ const SimpleInput = (props) => {
         />
       </div>
       {isNameValid && content}
+      <div className={emailInputClasses}>
+        <label htmlFor="email">Your Email</label>
+        <input
+          type="email"
+          id="email"
+          onChange={emailInputHandler}
+          value={currEmail}
+          onBlur={onBlurEmailHandler}
+        />
+      </div>
+      {isEmailValid && emailContent}
+
       <div className="form-actions">
         <button disabled={!isFormValid}>Submit</button>
       </div>
